@@ -1349,6 +1349,14 @@
 .lt-close:hover { color:#fff; }
 .lt-progress { position:absolute; bottom:0; left:0; height:3px; background:var(--teal); border-radius:0 0 0 10px; width:100%; transform-origin:left; animation:lt-shrink 4s linear forwards; }
 @keyframes lt-shrink { from{transform:scaleX(1)} to{transform:scaleX(0)} }
+.dash-tab-btn {
+  padding:7px 16px;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;
+  border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.55);
+  transition:all 0.15s;white-space:nowrap;
+}
+.dash-tab-btn.active {
+  background:rgba(123,63,191,0.2);border-color:var(--teal);color:var(--teal);
+}
 </style>
 
 <footer>
@@ -2259,6 +2267,15 @@ function loadDashboard(manual = false) {
     });
 }
 
+
+function updateNote(globalIdx, value) {
+  fetch(DASH_URL, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ action: 'updateNote', index: globalIdx, notes: value, password: DASH_PASS })
+  }).catch(() => {});
+  if (dashAllRows[globalIdx]) dashAllRows[globalIdx].notes = value;
+}
 function renderLeadsTable(rows) {
   const thead = document.getElementById('dash-thead');
   const tbody = document.getElementById('dash-tbody');
@@ -2308,6 +2325,9 @@ function renderLeadsTable(rows) {
         val = String(val).trim();
       }
       const escaped = val.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      if (c.key === 'notes') {
+        return `<td style="min-width:140px;"><input type="text" value="${escaped}" placeholder="—" onchange="updateNote(${globalIdx}, this.value)" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:5px;padding:3px 6px;color:#fff;font-size:0.78rem;outline:none;"></td>`;
+      }
       return `<td title="${escaped}">${escaped || '—'}</td>`;
     }).join('');
     const chk = `<td style="text-align:center;"><input type="checkbox" title="Exclude from leaderboard" ${excl ? 'checked' : ''} onchange="toggleExclude(${globalIdx})" style="cursor:pointer;accent-color:#f87171;width:15px;height:15px;"></td>`;
