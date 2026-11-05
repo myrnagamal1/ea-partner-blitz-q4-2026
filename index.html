@@ -1188,6 +1188,199 @@
 </section>
 
 <!-- ══ FOOTER ═════════════════════════════════════════════ -->
+
+<!-- ══ DASHBOARD SECTION ══════════════════════════════════════ -->
+<section id="dashboard" style="background:linear-gradient(180deg,#0d1f2f 0%,#091929 100%);padding:80px 20px 100px;">
+<div style="max-width:1100px;margin:0 auto;">
+
+<!-- Password gate -->
+<div id="dash-gate" style="max-width:400px;margin:0 auto;text-align:center;padding:60px 32px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;">
+  <div style="font-size:48px;margin-bottom:16px;">🔐</div>
+  <h2 style="color:#fff;font-size:1.5rem;font-weight:700;margin:0 0 8px;">Manager Dashboard</h2>
+  <p style="color:rgba(255,255,255,0.5);font-size:0.9rem;margin:0 0 28px;">SDEs &amp; Managers only. Enter access code:</p>
+  <input id="dash-pw-input" type="password" placeholder="Enter password"
+    style="width:100%;box-sizing:border-box;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:1rem;margin-bottom:12px;outline:none;"
+    onkeydown="if(event.key==='Enter')dashLogin()">
+  <button onclick="dashLogin()"
+    style="width:100%;padding:12px;border-radius:8px;background:var(--teal);color:#fff;font-size:1rem;font-weight:600;border:none;cursor:pointer;">
+    Unlock Dashboard
+  </button>
+  <div id="dash-pw-err" style="color:#f87171;font-size:0.85rem;margin-top:10px;display:none;">Incorrect password.</div>
+</div>
+
+<!-- Dashboard content (hidden until unlocked) -->
+<div id="dash-content" style="display:none;">
+
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:40px;">
+    <div>
+      <h2 style="color:#fff;font-size:2rem;font-weight:800;margin:0 0 4px;">Manager Dashboard</h2>
+      <p style="color:rgba(255,255,255,0.45);font-size:0.9rem;margin:0;" id="dash-updated">Loading…</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button onclick="loadDashboard(true)" id="dash-refresh-btn"
+        style="padding:9px 18px;border-radius:8px;background:rgba(123,79,191,0.2);color:var(--teal);border:1px solid var(--teal);font-size:0.85rem;font-weight:600;cursor:pointer;">
+        ↻ Refresh
+      </button>
+      <button onclick="dashLogout()"
+        style="padding:9px 18px;border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.12);font-size:0.85rem;cursor:pointer;">
+        Lock
+      </button>
+    </div>
+  </div>
+
+  <!-- Notify attendees panel -->
+  <div style="background:rgba(196,24,122,0.06);border:1px solid rgba(196,24,122,0.25);border-radius:14px;padding:20px 24px;margin-bottom:36px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <span style="font-size:22px;">&#x1F4E3;</span>
+    <div style="flex:1;min-width:200px;">
+      <div style="font-size:0.78rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Notify All Attendees</div>
+      <input id="notify-msg-input" type="text" placeholder="Type your announcement…"
+        style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 14px;color:#fff;font-size:0.9rem;font-family:inherit;"
+        onkeydown="if(event.key==='Enter')sendOrgNotification()">
+    </div>
+    <button onclick="sendOrgNotification()" id="notify-btn"
+      style="padding:10px 22px;border-radius:8px;background:var(--gold);color:#000;border:none;font-size:0.88rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;">
+      Send &#x27A4;
+    </button>
+    <span id="notify-status" style="font-size:0.8rem;color:rgba(255,255,255,0.5);"></span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:40px;" id="dash-stats">
+    <div class="dash-stat-card" style="background:rgba(123,79,191,0.12);border:1px solid rgba(123,79,191,0.3);border-radius:14px;padding:22px 20px;">
+      <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Total Leads</div>
+      <div id="dash-total" style="color:#fff;font-size:2.2rem;font-weight:800;">—</div>
+    </div>
+    <div class="dash-stat-card" style="background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.25);border-radius:14px;padding:22px 20px;">
+      <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Partners Active</div>
+      <div id="dash-partners" style="color:var(--gold);font-size:2.2rem;font-weight:800;">—</div>
+    </div>
+    <div class="dash-stat-card" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:22px 20px;">
+      <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Top Partner</div>
+      <div id="dash-top-partner" style="color:#fff;font-size:1.3rem;font-weight:700;line-height:1.2;margin-top:4px;">—</div>
+    </div>
+    <div class="dash-stat-card" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:22px 20px;">
+      <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">AI Opps Flagged</div>
+      <div id="dash-ai-count" style="color:#a78bfa;font-size:2.2rem;font-weight:800;">—</div>
+    </div>
+  </div>
+
+  <!-- Per-partner breakdown -->
+  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;margin-bottom:32px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+      <h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;">Partner Breakdown</h3>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 14px;">
+        <span style="font-size:0.78rem;color:rgba(255,255,255,0.5);white-space:nowrap;">Target leads / person:</span>
+        <input type="number" min="0" placeholder="0" id="global-target-input"
+          style="width:56px;background:rgba(255,255,255,0.08);border:1px solid rgba(139,92,246,0.4);border-radius:6px;padding:5px 8px;color:#fff;font-size:0.9rem;font-weight:700;text-align:center;outline:none;"
+          onchange="setGlobalTarget(parseInt(this.value)||0)">
+      </div>
+    </div>
+    <div id="dash-partner-bars"></div>
+    <div id="dash-partner-table-wrap" style="margin-top:24px;overflow-x:auto;display:none;">
+      <table id="dash-partner-table" style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Partner</th>
+            <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Leads</th>
+            <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">AI Opps</th>
+            <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Share</th>
+            <th style="text-align:left;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Outcomes</th>
+          </tr>
+        </thead>
+        <tbody id="dash-partner-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Full leads table -->
+  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+      <h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;">Submitted Leads</h3>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <input id="dash-search" type="text" placeholder="Search leads…"
+          oninput="filterLeadsTable()"
+          style="padding:8px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-size:0.85rem;width:220px;outline:none;">
+        <button onclick="downloadExcel()" style="padding:8px 16px;border-radius:8px;border:1px solid rgba(123,79,191,0.5);background:rgba(123,79,191,0.15);color:var(--teal);font-size:0.82rem;font-weight:600;cursor:pointer;white-space:nowrap;">⬇ Export Excel</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table id="dash-table" style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+        <thead id="dash-thead"></thead>
+        <tbody id="dash-tbody"></tbody>
+      </table>
+    </div>
+    <div id="dash-empty" style="text-align:center;padding:48px 20px;color:rgba(255,255,255,0.35);display:none;">No leads submitted yet.</div>
+  </div>
+
+  <!-- SDE View (only shown when SDES configured) -->
+  <div id="dash-sde-section" style="display:none;margin-top:32px;">
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;">SDE View</h3>
+        <div id="dash-sde-tabs" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+      </div>
+      <div id="dash-sde-content"></div>
+    </div>
+  </div>
+
+  <!-- AE View — leads grouped by partner -->
+  <div id="dash-ae-section" style="display:none;margin-top:32px;">
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;">AE View</h3>
+        <div id="dash-ae-tabs" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+      </div>
+      <div id="dash-ae-content"></div>
+    </div>
+  </div>
+
+</div><!-- /dash-content -->
+</div>
+</section>
+
+<style>
+#dash-pw-input:focus { border-color:var(--teal)!important; }
+#dash-search:focus { border-color:var(--teal)!important; }
+#dash-table th {
+  background:rgba(123,79,191,0.15);
+  color:rgba(255,255,255,0.7);
+  font-size:0.73rem;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  padding:10px 12px;
+  text-align:left;
+  white-space:nowrap;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+#dash-table td {
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  color:rgba(255,255,255,0.8);
+  vertical-align:top;
+  max-width:200px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#dash-table tr:hover td { background:rgba(255,255,255,0.04); }
+.dash-partner-row { display:flex;align-items:center;gap:14px;margin-bottom:14px; }
+.dash-partner-label { color:#fff;font-size:0.88rem;font-weight:600;width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.dash-partner-track { flex:1;height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden; }
+.dash-partner-fill { height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:4px;transform:scaleX(0);transform-origin:left center;transition:transform 0.6s ease; }
+.dash-partner-count { color:var(--gold);font-weight:700;font-size:0.88rem;width:30px;text-align:right;flex-shrink:0; }
+
+/* ── LEAD TOAST NOTIFICATION ───────────────────────────── */
+#lead-toast { position:fixed; top:24px; right:24px; z-index:9999; display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#0D1428 0%,#0a2020 100%); border:1px solid rgba(139,92,246,0.4); border-left:4px solid var(--teal); border-radius:14px; padding:16px 20px; min-width:280px; max-width:360px; box-shadow:0 8px 32px rgba(0,0,0,0.5); transform:translateX(120%); opacity:0; transition:transform 0.4s cubic-bezier(0.22,1,0.36,1),opacity 0.4s ease; pointer-events:none; }
+#lead-toast.show { transform:translateX(0); opacity:1; pointer-events:auto; }
+.lt-emoji { font-size:28px; flex-shrink:0; }
+.lt-body  { flex:1; }
+.lt-title { font-size:13px; font-weight:700; color:var(--teal2); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px; }
+.lt-msg   { font-size:14px; font-weight:500; color:#fff; }
+.lt-close { background:none; border:none; color:rgba(255,255,255,0.4); cursor:pointer; font-size:18px; flex-shrink:0; padding:0 4px; line-height:1; }
+.lt-close:hover { color:#fff; }
+.lt-progress { position:absolute; bottom:0; left:0; height:3px; background:var(--teal); border-radius:0 0 0 10px; width:100%; transform-origin:left; animation:lt-shrink 4s linear forwards; }
+@keyframes lt-shrink { from{transform:scaleX(1)} to{transform:scaleX(0)} }
+</style>
+
 <footer>
   <p><strong>EA Partner Blitz - Q4 2026</strong> &nbsp;·&nbsp; SAP Kenya, Uganda, Tanzania, Rwanda, Angola Partner Blitz</p>
   <p style="margin-top:8px;">Pipeline Generation &nbsp;·&nbsp; Partner Ecosystem &nbsp;·&nbsp; MEA</p>
@@ -1513,197 +1706,6 @@ setInterval(loadLeaderboard, REFRESH_INTERVAL);
 })();
 </script>
 
-<!-- ══ DASHBOARD SECTION ══════════════════════════════════════ -->
-<section id="dashboard" style="background:linear-gradient(180deg,#0d1f2f 0%,#091929 100%);padding:80px 20px 100px;">
-<div style="max-width:1100px;margin:0 auto;">
-
-<!-- Password gate -->
-<div id="dash-gate" style="max-width:400px;margin:0 auto;text-align:center;padding:60px 32px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;">
-  <div style="font-size:48px;margin-bottom:16px;">🔐</div>
-  <h2 style="color:#fff;font-size:1.5rem;font-weight:700;margin:0 0 8px;">Manager Dashboard</h2>
-  <p style="color:rgba(255,255,255,0.5);font-size:0.9rem;margin:0 0 28px;">SDEs &amp; Managers only. Enter access code:</p>
-  <input id="dash-pw-input" type="password" placeholder="Enter password"
-    style="width:100%;box-sizing:border-box;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:1rem;margin-bottom:12px;outline:none;"
-    onkeydown="if(event.key==='Enter')dashLogin()">
-  <button onclick="dashLogin()"
-    style="width:100%;padding:12px;border-radius:8px;background:var(--teal);color:#fff;font-size:1rem;font-weight:600;border:none;cursor:pointer;">
-    Unlock Dashboard
-  </button>
-  <div id="dash-pw-err" style="color:#f87171;font-size:0.85rem;margin-top:10px;display:none;">Incorrect password.</div>
-</div>
-
-<!-- Dashboard content (hidden until unlocked) -->
-<div id="dash-content" style="display:none;">
-
-  <!-- Header -->
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:40px;">
-    <div>
-      <h2 style="color:#fff;font-size:2rem;font-weight:800;margin:0 0 4px;">Manager Dashboard</h2>
-      <p style="color:rgba(255,255,255,0.45);font-size:0.9rem;margin:0;" id="dash-updated">Loading…</p>
-    </div>
-    <div style="display:flex;gap:10px;align-items:center;">
-      <button onclick="loadDashboard(true)" id="dash-refresh-btn"
-        style="padding:9px 18px;border-radius:8px;background:rgba(123,79,191,0.2);color:var(--teal);border:1px solid var(--teal);font-size:0.85rem;font-weight:600;cursor:pointer;">
-        ↻ Refresh
-      </button>
-      <button onclick="dashLogout()"
-        style="padding:9px 18px;border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.12);font-size:0.85rem;cursor:pointer;">
-        Lock
-      </button>
-    </div>
-  </div>
-
-  <!-- Notify attendees panel -->
-  <div style="background:rgba(196,24,122,0.06);border:1px solid rgba(196,24,122,0.25);border-radius:14px;padding:20px 24px;margin-bottom:36px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-    <span style="font-size:22px;">&#x1F4E3;</span>
-    <div style="flex:1;min-width:200px;">
-      <div style="font-size:0.78rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Notify All Attendees</div>
-      <input id="notify-msg-input" type="text" placeholder="Type your announcement…"
-        style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 14px;color:#fff;font-size:0.9rem;font-family:inherit;"
-        onkeydown="if(event.key==='Enter')sendOrgNotification()">
-    </div>
-    <button onclick="sendOrgNotification()" id="notify-btn"
-      style="padding:10px 22px;border-radius:8px;background:var(--gold);color:#000;border:none;font-size:0.88rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;">
-      Send &#x27A4;
-    </button>
-    <span id="notify-status" style="font-size:0.8rem;color:rgba(255,255,255,0.5);"></span>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:40px;" id="dash-stats">
-    <div class="dash-stat-card" style="background:rgba(123,79,191,0.12);border:1px solid rgba(123,79,191,0.3);border-radius:14px;padding:22px 20px;">
-      <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Total Leads</div>
-      <div id="dash-total" style="color:#fff;font-size:2.2rem;font-weight:800;">—</div>
-    </div>
-    <div class="dash-stat-card" style="background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.25);border-radius:14px;padding:22px 20px;">
-      <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Partners Active</div>
-      <div id="dash-partners" style="color:var(--gold);font-size:2.2rem;font-weight:800;">—</div>
-    </div>
-    <div class="dash-stat-card" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:22px 20px;">
-      <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Top Partner</div>
-      <div id="dash-top-partner" style="color:#fff;font-size:1.3rem;font-weight:700;line-height:1.2;margin-top:4px;">—</div>
-    </div>
-    <div class="dash-stat-card" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:22px 20px;">
-      <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">AI Opps Flagged</div>
-      <div id="dash-ai-count" style="color:#a78bfa;font-size:2.2rem;font-weight:800;">—</div>
-    </div>
-  </div>
-
-  <!-- Per-partner breakdown -->
-  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;margin-bottom:32px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
-      <h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;">Partner Breakdown</h3>
-      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 14px;">
-        <span style="font-size:0.78rem;color:rgba(255,255,255,0.5);white-space:nowrap;">Target leads / person:</span>
-        <input type="number" min="0" placeholder="0" id="global-target-input"
-          style="width:56px;background:rgba(255,255,255,0.08);border:1px solid rgba(139,92,246,0.4);border-radius:6px;padding:5px 8px;color:#fff;font-size:0.9rem;font-weight:700;text-align:center;outline:none;"
-          onchange="setGlobalTarget(parseInt(this.value)||0)">
-      </div>
-    </div>
-    <div id="dash-partner-bars"></div>
-    <div id="dash-partner-table-wrap" style="margin-top:24px;overflow-x:auto;display:none;">
-      <table id="dash-partner-table" style="width:100%;border-collapse:collapse;font-size:0.82rem;">
-        <thead>
-          <tr>
-            <th style="text-align:left;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Partner</th>
-            <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Leads</th>
-            <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">AI Opps</th>
-            <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Share</th>
-            <th style="text-align:left;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Outcomes</th>
-          </tr>
-        </thead>
-        <tbody id="dash-partner-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Full leads table -->
-  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;overflow:hidden;">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-      <h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;">Submitted Leads</h3>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <input id="dash-search" type="text" placeholder="Search leads…"
-          oninput="filterLeadsTable()"
-          style="padding:8px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-size:0.85rem;width:220px;outline:none;">
-        <button onclick="downloadExcel()" style="padding:8px 16px;border-radius:8px;border:1px solid rgba(123,79,191,0.5);background:rgba(123,79,191,0.15);color:var(--teal);font-size:0.82rem;font-weight:600;cursor:pointer;white-space:nowrap;">⬇ Export Excel</button>
-      </div>
-    </div>
-    <div style="overflow-x:auto;">
-      <table id="dash-table" style="width:100%;border-collapse:collapse;font-size:0.82rem;">
-        <thead id="dash-thead"></thead>
-        <tbody id="dash-tbody"></tbody>
-      </table>
-    </div>
-    <div id="dash-empty" style="text-align:center;padding:48px 20px;color:rgba(255,255,255,0.35);display:none;">No leads submitted yet.</div>
-  </div>
-
-  <!-- SDE View (only shown when SDES configured) -->
-  <div id="dash-sde-section" style="display:none;margin-top:32px;">
-    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-        <h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;">SDE View</h3>
-        <div id="dash-sde-tabs" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
-      </div>
-      <div id="dash-sde-content"></div>
-    </div>
-  </div>
-
-  <!-- AE View — leads grouped by partner -->
-  <div id="dash-ae-section" style="display:none;margin-top:32px;">
-    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-        <h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;">AE View</h3>
-        <div id="dash-ae-tabs" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
-      </div>
-      <div id="dash-ae-content"></div>
-    </div>
-  </div>
-
-</div><!-- /dash-content -->
-</div>
-</section>
-
-<style>
-#dash-pw-input:focus { border-color:var(--teal)!important; }
-#dash-search:focus { border-color:var(--teal)!important; }
-#dash-table th {
-  background:rgba(123,79,191,0.15);
-  color:rgba(255,255,255,0.7);
-  font-size:0.73rem;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-  padding:10px 12px;
-  text-align:left;
-  white-space:nowrap;
-  border-bottom:1px solid rgba(255,255,255,0.08);
-}
-#dash-table td {
-  padding:10px 12px;
-  border-bottom:1px solid rgba(255,255,255,0.05);
-  color:rgba(255,255,255,0.8);
-  vertical-align:top;
-  max-width:200px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-#dash-table tr:hover td { background:rgba(255,255,255,0.04); }
-.dash-partner-row { display:flex;align-items:center;gap:14px;margin-bottom:14px; }
-.dash-partner-label { color:#fff;font-size:0.88rem;font-weight:600;width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
-.dash-partner-track { flex:1;height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden; }
-.dash-partner-fill { height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:4px;transform:scaleX(0);transform-origin:left center;transition:transform 0.6s ease; }
-.dash-partner-count { color:var(--gold);font-weight:700;font-size:0.88rem;width:30px;text-align:right;flex-shrink:0; }
-
-/* ── LEAD TOAST NOTIFICATION ───────────────────────────── */
-#lead-toast { position:fixed; top:24px; right:24px; z-index:9999; display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#0D1428 0%,#0a2020 100%); border:1px solid rgba(139,92,246,0.4); border-left:4px solid var(--teal); border-radius:14px; padding:16px 20px; min-width:280px; max-width:360px; box-shadow:0 8px 32px rgba(0,0,0,0.5); transform:translateX(120%); opacity:0; transition:transform 0.4s cubic-bezier(0.22,1,0.36,1),opacity 0.4s ease; pointer-events:none; }
-#lead-toast.show { transform:translateX(0); opacity:1; pointer-events:auto; }
-.lt-emoji { font-size:28px; flex-shrink:0; }
-.lt-body  { flex:1; }
-.lt-title { font-size:13px; font-weight:700; color:var(--teal2); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px; }
-.lt-msg   { font-size:14px; font-weight:500; color:#fff; }
-.lt-close { background:none; border:none; color:rgba(255,255,255,0.4); cursor:pointer; font-size:18px; flex-shrink:0; padding:0 4px; line-height:1; }
-.lt-close:hover { color:#fff; }
-.lt-progress { position:absolute; bottom:0; left:0; height:3px; background:var(--teal); border-radius:0 0 0 10px; width:100%; transform-origin:left; animation:lt-shrink 4s linear forwards; }
-@keyframes lt-shrink { from{transform:scaleX(1)} to{transform:scaleX(0)} }
-</style>
 
 <script>
 let dashAllRows = [];
