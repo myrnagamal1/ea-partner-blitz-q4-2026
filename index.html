@@ -2202,8 +2202,6 @@ const SDE_TABS_ALL = 'General';
 if (sessionStorage.getItem('dashUnlocked') === '1') {
   document.getElementById('dash-gate').style.display = 'none';
   document.getElementById('dash-content').style.display = 'block';
-  initSdeSection();
-  initAeSection();
   loadDashboard();
   dashInterval = setInterval(loadDashboard, 60000);
 }
