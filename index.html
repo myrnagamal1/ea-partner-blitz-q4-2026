@@ -1775,19 +1775,9 @@ async function toggleSalescreen(idx, checkbox) {
 function renderDashStats(rows) {
   const included = rows.filter((_, i) => !dashExcluded.has(i));
   const counts = {};
-  const aiCounts = {};
-  const outcomeCounts = {};
   included.forEach(r => {
-    const p = (r['partner'] || '').toString().trim();
-    if (!p) return;
-    counts[p] = (counts[p] || 0) + 1;
-    const v = String(r['ai'] || '').trim().toLowerCase();
-    if (v === 'yes') aiCounts[p] = (aiCounts[p] || 0) + 1;
-    const outcome = (r['outcome'] || '').toString().trim();
-    if (outcome) {
-      if (!outcomeCounts[p]) outcomeCounts[p] = {};
-      outcomeCounts[p][outcome] = (outcomeCounts[p][outcome] || 0) + 1;
-    }
+    const p = (r.partner || '').toString().trim();
+    if (p) counts[p] = (counts[p] || 0) + 1;
   });
   const lb = Object.keys(counts).map(p => ({ partner: p, leads: counts[p] }))
     .sort((a, b) => b.leads - a.leads);
@@ -1797,19 +1787,19 @@ function renderDashStats(rows) {
   document.getElementById('dash-top-partner').textContent = lb.length > 0 ? lb[0].partner : '—';
 
   const aiCount = included.filter(r => {
-    const v = String(r['ai'] || '').trim().toLowerCase();
+    const v = String(r.ai || '').trim().toLowerCase();
     return v === 'yes';
   }).length;
   document.getElementById('dash-ai-count').textContent = aiCount;
 
-  const maxLeads = lb.length > 0 ? Math.max(...lb.map(d => d.leads), 1) : 1;
-  const total = included.length || 1;
+  renderLeaderboard(lb);
 
+  const maxLeads = lb.length > 0 ? Math.max(...lb.map(d => d.leads), 1) : 1;
   // Populate global target input
   const _gti = document.getElementById('global-target-input');
   if (_gti) _gti.value = getGlobalTarget() || '';
 
-    // Build lead count lookup
+  // Build lead count lookup from leaderboard (only partners with leads are in lb)
   const leadMap = {};
   lb.forEach(item => { leadMap[item.partner] = item.leads; });
   const maxPartnerLeads = Math.max(...PARTNERS.map(p => leadMap[p] || 0), 1);
@@ -2185,8 +2175,6 @@ function dashLogin() {
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
     document.getElementById('dash-pw-err').style.display = 'none';
-    initSdeSection();
-    initAeSection();
     loadDashboard();
     dashInterval = setInterval(loadDashboard, 60000);
   } else {
@@ -2216,7 +2204,7 @@ if (sessionStorage.getItem('dashUnlocked') === '1') {
 }
 
 function loadDashboard(manual = false) {
-  fetch(DASH_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+  fetch(WEB_APP_URL)
     .then(r => r.json())
     .then(data => {
       const rows = data.rows || [];
@@ -2225,19 +2213,15 @@ function loadDashboard(manual = false) {
       // Stats + partner bars (respects excluded rows)
       renderDashStats(rows);
 
-      // SDE view
-      if (activeSdeTab) renderSdeTab(activeSdeTab);
-      // AE view
-      if (activeAeTab) renderAeTab(activeAeTab);
-
       // Updated timestamp
       const d = new Date(data.updated);
       document.getElementById('dash-updated').textContent =
         'Last updated: ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) +
         (manual ? ' (manual refresh)' : ' · auto-refresh every 60s');
 
-      // Leads table
-      renderLeadsTable(rows);
+      // Tabs + leads table
+      renderDashTabs();
+      applyDashView();
     })
     .catch(() => {
       document.getElementById('dash-updated').textContent = 'Could not load data — retrying…';
