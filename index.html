@@ -1605,8 +1605,6 @@ setInterval(loadLeaderboard, REFRESH_INTERVAL);
           <tr>
             <th style="text-align:left;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Partner</th>
             <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Leads</th>
-            <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Attendees</th>
-            <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Progress</th>
             <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">AI Opps</th>
             <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Share</th>
             <th style="text-align:left;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Outcomes</th>
@@ -1858,8 +1856,6 @@ function renderDashStats(rows) {
       return `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
         <td style="padding:10px 12px;color:#fff;font-weight:600;">${item.partner.replace(/</g,'&lt;')}</td>
         <td style="padding:10px 12px;text-align:center;color:var(--gold);font-weight:700;">${item.leads}</td>
-        <td style="padding:10px 12px;text-align:center;color:rgba(255,255,255,0.6);">${att > 0 ? att : '<span style="color:rgba(255,255,255,0.25);">—</span>'}</td>
-        <td style="padding:10px 12px;text-align:center;">${progCell}</td>
         <td style="padding:10px 12px;text-align:center;color:#a78bfa;">${ai > 0 ? ai : '<span style="color:rgba(255,255,255,0.3);">0</span>'}</td>
         <td style="padding:10px 12px;text-align:center;color:rgba(255,255,255,0.6);">${pct}%</td>
         <td style="padding:10px 12px;">${topOutcomes || '<span style="color:rgba(255,255,255,0.3);font-size:0.8rem;">none</span>'}</td>
