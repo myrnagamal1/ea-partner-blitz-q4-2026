@@ -1219,7 +1219,7 @@
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
       <button onclick="loadDashboard(true)" id="dash-refresh-btn"
-        style="padding:9px 18px;border-radius:8px;background:rgba(123,79,191,0.2);color:var(--teal);border:1px solid var(--teal);font-size:0.85rem;font-weight:600;cursor:pointer;">
+        style="padding:9px 18px;border-radius:8px;background:rgba(123,63,191,0.2);color:var(--teal);border:1px solid var(--teal);font-size:0.85rem;font-weight:600;cursor:pointer;">
         ↻ Refresh
       </button>
       <button onclick="dashLogout()"
@@ -1229,23 +1229,26 @@
     </div>
   </div>
 
-  <!-- Notify attendees panel -->
+
+  <!-- Organiser Notify Panel -->
   <div style="background:rgba(196,24,122,0.06);border:1px solid rgba(196,24,122,0.25);border-radius:14px;padding:20px 24px;margin-bottom:36px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
     <span style="font-size:22px;">&#x1F4E3;</span>
     <div style="flex:1;min-width:200px;">
       <div style="font-size:0.78rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Notify All Attendees</div>
-      <input id="notify-msg-input" type="text" placeholder="Type your announcement…"
-        style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 14px;color:#fff;font-size:0.9rem;font-family:inherit;"
+      <input id="notify-msg-input" type="text" placeholder="Type your announcement&hellip;"
+        style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(196,24,122,0.3);border-radius:8px;padding:10px 14px;color:#fff;font-size:0.9rem;outline:none;"
         onkeydown="if(event.key==='Enter')sendOrgNotification()">
     </div>
     <button onclick="sendOrgNotification()" id="notify-btn"
-      style="padding:10px 22px;border-radius:8px;background:var(--gold);color:#000;border:none;font-size:0.88rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;">
+      style="padding:10px 20px;border-radius:8px;background:var(--gold);color:#000;font-weight:700;border:none;cursor:pointer;font-size:0.9rem;">
       Send &#x27A4;
     </button>
-    <span id="notify-status" style="font-size:0.8rem;color:rgba(255,255,255,0.5);"></span>
+    <span id="notify-status" style="font-size:0.8rem;color:var(--gold);min-width:60px;"></span>
   </div>
+
+  <!-- Stats cards -->
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:40px;" id="dash-stats">
-    <div class="dash-stat-card" style="background:rgba(123,79,191,0.12);border:1px solid rgba(123,79,191,0.3);border-radius:14px;padding:22px 20px;">
+    <div class="dash-stat-card" style="background:rgba(123,63,191,0.12);border:1px solid rgba(123,63,191,0.3);border-radius:14px;padding:22px 20px;">
       <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Total Leads</div>
       <div id="dash-total" style="color:#fff;font-size:2.2rem;font-weight:800;">—</div>
     </div>
@@ -1275,31 +1278,20 @@
       </div>
     </div>
     <div id="dash-partner-bars"></div>
-    <div id="dash-partner-table-wrap" style="margin-top:24px;overflow-x:auto;display:none;">
-      <table id="dash-partner-table" style="width:100%;border-collapse:collapse;font-size:0.82rem;">
-        <thead>
-          <tr>
-            <th style="text-align:left;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Partner</th>
-            <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Leads</th>
-            <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">AI Opps</th>
-            <th style="text-align:center;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Share</th>
-            <th style="text-align:left;padding:8px 12px;color:rgba(255,255,255,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(255,255,255,0.1);">Outcomes</th>
-          </tr>
-        </thead>
-        <tbody id="dash-partner-tbody"></tbody>
-      </table>
-    </div>
   </div>
 
   <!-- Full leads table -->
   <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;overflow:hidden;">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-      <h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;">Submitted Leads</h3>
-      <div style="display:flex;align-items:center;gap:10px;">
+      <div id="dash-tabs" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+      <div style="display:flex;gap:8px;align-items:center;">
         <input id="dash-search" type="text" placeholder="Search leads…"
           oninput="filterLeadsTable()"
           style="padding:8px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-size:0.85rem;width:220px;outline:none;">
-        <button onclick="downloadExcel()" style="padding:8px 16px;border-radius:8px;border:1px solid rgba(123,79,191,0.5);background:rgba(123,79,191,0.15);color:var(--teal);font-size:0.82rem;font-weight:600;cursor:pointer;white-space:nowrap;">⬇ Export Excel</button>
+        <button onclick="downloadLeadsExcel()"
+          style="padding:8px 16px;border-radius:8px;background:rgba(123,63,191,0.15);border:1px solid rgba(139,92,246,0.35);color:var(--teal2);font-size:0.82rem;font-weight:600;cursor:pointer;white-space:nowrap;">
+          ↓ Excel
+        </button>
       </div>
     </div>
     <div style="overflow-x:auto;">
@@ -1309,28 +1301,6 @@
       </table>
     </div>
     <div id="dash-empty" style="text-align:center;padding:48px 20px;color:rgba(255,255,255,0.35);display:none;">No leads submitted yet.</div>
-  </div>
-
-  <!-- SDE View (only shown when SDES configured) -->
-  <div id="dash-sde-section" style="display:none;margin-top:32px;">
-    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-        <h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;">SDE View</h3>
-        <div id="dash-sde-tabs" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
-      </div>
-      <div id="dash-sde-content"></div>
-    </div>
-  </div>
-
-  <!-- AE View — leads grouped by partner -->
-  <div id="dash-ae-section" style="display:none;margin-top:32px;">
-    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-        <h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin:0;">AE View</h3>
-        <div id="dash-ae-tabs" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
-      </div>
-      <div id="dash-ae-content"></div>
-    </div>
   </div>
 
 </div><!-- /dash-content -->
@@ -1581,8 +1551,13 @@ function renderLeaderboard(data) {
   // Update stat
   document.getElementById('total-leads-stat').textContent = totalLeads;
 
-  // Update target of the day
-  const TARGET = LEAD_TARGET;
+  // Update target of the day — use total attendees × global target/person if set
+  const _gTgt = getGlobalTarget();
+  const _totalAtt = PARTNERS.reduce((s, p) => s + getAtt(p), 0);
+  const TARGET = (_gTgt > 0 && _totalAtt > 0) ? (_totalAtt * _gTgt) : LEAD_TARGET;
+  // Show the computed goal in the header
+  const _goalEl = document.getElementById('lb-target-goal');
+  if (_goalEl) _goalEl.textContent = TARGET;
   const pctTarget = Math.min(Math.round((totalLeads / TARGET) * 100), 100);
   document.getElementById('lb-target-count').textContent = totalLeads;
   document.getElementById('lb-target-bar').style.transform = 'scaleX(' + (pctTarget / 100) + ')';
@@ -1604,11 +1579,41 @@ function renderLeaderboard(data) {
   const medals = ['🥇','🥈','🥉'];
   const rowClasses = ['rank-1-row','rank-2-row','rank-3-row'];
 
-  tbody.innerHTML = data.map((item, i) => {
-    const pct = maxLeads > 0 ? Math.round((item.leads / maxLeads) * 100) : 0;
+  // Re-sort by % of target if target data is available
+  const globalTgt = getGlobalTarget();
+  const enriched = data.map(item => {
+    const att = getAtt(item.partner);
+    const totalTarget = att * globalTgt;
+    const targetPct = totalTarget > 0 ? item.leads / totalTarget * 100 : null;
+    return { ...item, att, totalTarget, targetPct };
+  });
+  // Sort: if any partner has a target, sort by % desc; else keep raw leads order
+  const hasTargets = enriched.some(e => e.targetPct !== null);
+  if (hasTargets) {
+    enriched.sort((a, b) => {
+      // Partners with target go first, sorted by %; no-target partners sorted by leads
+      if (a.targetPct !== null && b.targetPct !== null) return b.targetPct - a.targetPct;
+      if (a.targetPct !== null) return -1;
+      if (b.targetPct !== null) return 1;
+      return b.leads - a.leads;
+    });
+  }
+
+  tbody.innerHTML = enriched.map((item, i) => {
     const rankClass = i < 3 ? rowClasses[i] : '';
     const badgeClass = i < 3 ? `rank-${i+1}` : 'rank-n';
     const badgeContent = i < 3 ? medals[i] : (i + 1);
+    // Bar width: % of target if available, else relative to max leads
+    const barW = item.targetPct !== null
+      ? Math.min(item.targetPct, 100).toFixed(1)
+      : maxLeads > 0 ? Math.round((item.leads / maxLeads) * 100) : 0;
+    const barColor = item.targetPct !== null
+      ? (item.targetPct >= 100 ? '#4ade80' : item.targetPct >= 60 ? '#f97316' : null)
+      : null;
+    const barStyle = barColor ? `background:${barColor};` : '';
+    const pctLabel = item.targetPct !== null
+      ? `<div class="leads-label" style="color:${barColor || 'rgba(255,255,255,0.45)'};">${Math.round(item.targetPct)}% of target</div>`
+      : `<div class="leads-label">leads</div>`;
 
     return `
     <tr class="lb-row ${rankClass}">
@@ -1616,12 +1621,12 @@ function renderLeaderboard(data) {
       <td><div class="partner-name">${item.partner}</div></td>
       <td>
         <div class="progress-bar">
-          <div class="progress-fill" style="transform:scaleX(${pct/100})"></div>
+          <div class="progress-fill" style="transform:scaleX(${barW/100});${barStyle}"></div>
         </div>
       </td>
       <td>
         <div class="leads-count">${item.leads}</div>
-        <div class="leads-label">leads</div>
+        ${pctLabel}
       </td>
     </tr>`;
   }).join('');
@@ -2233,6 +2238,24 @@ function renderLeadsTable(rows) {
   const tbody = document.getElementById('dash-tbody');
   const empty = document.getElementById('dash-empty');
 
+  const COLS = [
+    { key: 'timestamp', label: 'Time' },
+    { key: 'partner',   label: 'Partner' },
+    { key: 'rep',       label: 'Rep' },
+    { key: 'account',   label: 'Account' },
+    { key: 'contact',   label: 'Contact' },
+    { key: 'title',     label: 'Title' },
+    { key: 'phone',     label: 'Phone' },
+    { key: 'email',     label: 'Email' },
+    { key: 'industry',  label: 'Industry' },
+    { key: 'outcome',    label: 'Solution' },
+    { key: 'ai',         label: 'AI?' },
+    { key: 'nextstep',   label: 'Next Step' },
+    { key: 'notes',      label: 'Notes' },
+    { key: 'sde',        label: 'SDE' },
+    { key: 'onMaster',   label: 'Master?' },
+  ];
+
   if (rows.length === 0) {
     thead.innerHTML = '';
     tbody.innerHTML = '';
@@ -2241,29 +2264,31 @@ function renderLeadsTable(rows) {
   }
   empty.style.display = 'none';
 
-  thead.innerHTML = '<tr><th title="Exclude from leaderboard">Excl.</th>' + COLS.map(c => {
-    const active = dashColFilter && dashColFilter.key === c.key;
-    return `<th style="cursor:pointer;user-select:none;white-space:nowrap;${active ? 'color:var(--teal2);' : ''}" title="Click to filter by ${c.label}" onclick="setColFilter('${c.key}','${c.label}')">${c.label}${active ? ' <span style="font-size:10px">&#9660;</span>' : ''}</th>`;
-  }).join('') + '<th style="text-align:center;white-space:nowrap;color:var(--teal2);">Salescreen</th></tr>';
+  thead.innerHTML = '<tr><th title="Exclude from leaderboard">Excl.</th>' + COLS.map(c => `<th>${c.label}</th>`).join('') + '<th>Salescreen</th><th></th></tr>';
 
   tbody.innerHTML = rows.map((row, idx) => {
-    const excl = dashExcluded.has(idx);
+    const globalIdx = row._globalIdx !== undefined ? row._globalIdx : idx;
+    const excl = dashExcluded.has(globalIdx);
     const rowStyle = excl ? 'opacity:0.35;text-decoration:line-through;' : '';
     const cells = COLS.map(c => {
       let val = row[c.key];
       if (val === null || val === undefined) val = '';
       if (c.key === 'timestamp') {
-        const d = new Date(val);
-        val = isNaN(d.getTime()) ? '' : d.toLocaleString('en-GB', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+        try {
+          const d = new Date(val);
+          val = d.toLocaleString('en-GB', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+        } catch(e) {}
       } else {
         val = String(val).trim();
       }
       const escaped = val.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      return `<td title="${escaped}">${escaped || '&mdash;'}</td>`;
+      return `<td title="${escaped}">${escaped || '—'}</td>`;
     }).join('');
-    const chk = `<td style="text-align:center;"><input type="checkbox" title="Exclude from leaderboard" ${excl ? 'checked' : ''} onchange="toggleExclude(${idx})" style="cursor:pointer;accent-color:#f87171;width:15px;height:15px;"></td>`;
-    const sale = `<td style="text-align:center;"><input type="checkbox" title="Show on salescreen" ${row.salescreen ? 'checked' : ''} onchange="toggleSalescreen(${idx}, this)" style="cursor:pointer;accent-color:var(--teal2);width:15px;height:15px;"></td>`;
-    return `<tr style="${rowStyle}">${chk}${cells}${sale}</tr>`;
+    const chk = `<td style="text-align:center;"><input type="checkbox" title="Exclude from leaderboard" ${excl ? 'checked' : ''} onchange="toggleExclude(${globalIdx})" style="cursor:pointer;accent-color:#f87171;width:15px;height:15px;"></td>`;
+    const salescreenChecked = row.salescreen === 'YES';
+    const salescreenCell = `<td style="text-align:center;"><input type="checkbox" title="Salescreen" ${salescreenChecked ? 'checked' : ''} onchange="toggleSalescreen(${globalIdx}, this)" style="cursor:pointer;accent-color:#8B5CF6;width:15px;height:15px;"></td>`;
+    const del = `<td style="text-align:center;"><button onclick="deleteLead(${globalIdx})" title="Delete lead" style="background:none;border:none;cursor:pointer;color:#f87171;font-size:15px;padding:2px 6px;">✕</button></td>`;
+    return `<tr style="${rowStyle}">${chk}${cells}${salescreenCell}${del}</tr>`;
   }).join('');
 }
 
@@ -2282,34 +2307,12 @@ function setColFilter(key, label) {
 }
 
 function filterLeadsTable() {
-  const q = document.getElementById('dash-search').value.toLowerCase();
-  if (!q && !dashColFilter) { renderLeadsTable(dashAllRows); return; }
-  const filtered = dashAllRows.filter(row => {
-    if (dashColFilter && q) return String(row[dashColFilter.key] || '').toLowerCase().includes(q);
-    if (dashColFilter)      return String(row[dashColFilter.key] || '').toLowerCase() !== '';
-    return Object.values(row).some(v => String(v).toLowerCase().includes(q));
-  });
-  renderLeadsTable(filtered);
+  applyDashView();
 }
 
 // ── SDE View ──────────────────────────────────────────
 
-function initSdeSection() {
-  if (!SDES || SDES.length === 0) return;
-  document.getElementById('dash-sde-section').style.display = '';
-  const tabsEl = document.getElementById('dash-sde-tabs');
-  const allTabs = [SDE_TABS_ALL, ...SDES];
-  tabsEl.innerHTML = allTabs.map(name => {
-    const id = 'sde-tab-' + name.replace(/[^a-zA-Z0-9]/g, '_');
-    return `<button onclick="showSdeTab('${name.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}') " id="${id}"
-      style="padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);font-size:0.82rem;cursor:pointer;transition:all 0.2s;">
-      ${name.replace(/</g,'&lt;')}
-    </button>`;
-  }).join('');
-  activeSdeTab = SDE_TABS_ALL;
-  renderSdeTab(activeSdeTab);
-  highlightSdeTab(activeSdeTab);
-}
+
 
 function showSdeTab(name) {
   activeSdeTab = name;
@@ -2373,21 +2376,7 @@ function renderSdeTab(sde) {
 // ── AE View ──────────────────────────────────────────
 var activeAeTab = null;
 
-function initAeSection() {
-  document.getElementById('dash-ae-section').style.display = '';
-  const tabsEl = document.getElementById('dash-ae-tabs');
-  const allTabs = ['All', ...PARTNERS];
-  tabsEl.innerHTML = allTabs.map(name => {
-    const id = 'ae-tab-' + name.replace(/[^a-zA-Z0-9]/g, '_');
-    return `<button onclick="showAeTab('${name.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}') " id="${id}"
-      style="padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);font-size:0.82rem;cursor:pointer;transition:all 0.2s;">
-      ${name.replace(/</g,'&lt;')}
-    </button>`;
-  }).join('');
-  activeAeTab = 'All';
-  renderAeTab('All');
-  highlightAeTab('All');
-}
+
 
 function showAeTab(name) {
   activeAeTab = name;
