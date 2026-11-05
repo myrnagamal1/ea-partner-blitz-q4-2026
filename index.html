@@ -2208,6 +2208,34 @@ if (sessionStorage.getItem('dashUnlocked') === '1') {
   dashInterval = setInterval(loadDashboard, 60000);
 }
 
+let dashActiveTab = 'all';
+
+function renderDashTabs() {
+  const container = document.getElementById('dash-tabs');
+  const tabs = [{ id: 'all', label: 'All Leads' }];
+  if (SDES && SDES.length > 0) {
+    SDES.forEach(s => tabs.push({ id: s, label: s }));
+  }
+  container.innerHTML = tabs.map(t =>
+    `<button class="dash-tab-btn${dashActiveTab === t.id ? ' active' : ''}" onclick="setDashTab('${t.id.replace(/'/g, "\\'")}')">${t.label}</button>`
+  ).join('');
+}
+
+function setDashTab(tabId) {
+  dashActiveTab = tabId;
+  renderDashTabs();
+  applyDashView();
+}
+
+function applyDashView() {
+  const q = document.getElementById('dash-search').value.toLowerCase();
+  let rows = dashActiveTab === 'all'
+    ? dashAllRows.map((r, i) => ({ ...r, _globalIdx: i }))
+    : dashAllRows.map((r, i) => ({ ...r, _globalIdx: i })).filter(r => (r.sde || '').trim() === dashActiveTab);
+  if (q) rows = rows.filter(row => Object.values(row).some(v => String(v).toLowerCase().includes(q)));
+  renderLeadsTable(rows);
+}
+
 function loadDashboard(manual = false) {
   fetch(WEB_APP_URL)
     .then(r => r.json())
