@@ -577,7 +577,7 @@
     transition: border-color 0.2s, background 0.2s;
     box-sizing: border-box;
   }
-  .lf-input:focus { border-color: var(--teal); background: rgba(123,79,191,0.08); }
+  .lf-input:focus { border-color: var(--teal); background: rgba(123,79,191,0.12); box-shadow: 0 0 0 3px rgba(123,79,191,0.15); outline: none; }
   .lf-input option { background: #0D1428; color: #fff; }
   textarea.lf-input { resize: vertical; }
   .lf-suggestions {
@@ -872,7 +872,7 @@
       <span class="line2">Blitz</span><br>
       <span class="line3">Kenya, Uganda, Tanzania, Rwanda, Angola</span>
     </h1>
-    <p class="hero-sub">Focused pipeline generation across Kenya, Uganda, Tanzania, Rwanda, Angola's top SAP partners</p>
+    <p class="hero-sub">Focused pipeline generation across Kenya · Uganda · Tanzania · Rwanda · Angola — top SAP partners</p>
     <div class="hero-dates" id="hero-dates"></div>
     <div class="hero-cta-wrap" style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
       <a href="#submit" class="hero-cta">Submit a Lead →</a>
@@ -927,7 +927,7 @@
     <h2 class="section-title">Submit a <span class="gold">Lead</span></h2>
     <p class="section-desc">Fill in the form below for each account you connect with during the Blitz.</p>
 
-    <div class="form-wrapper" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:36px 40px;max-width:640px;margin:0 auto;">
+    <div class="form-wrapper" style="background:linear-gradient(160deg,rgba(123,79,191,0.08) 0%,rgba(196,24,122,0.05) 100%);border:1px solid rgba(123,79,191,0.25);border-radius:20px;padding:40px 44px;max-width:640px;margin:0 auto;box-shadow:0 8px 48px rgba(0,0,0,0.4);">
 
       <!-- ── LEAD FORM ── -->
       <div id="lf-form-body">
@@ -970,10 +970,24 @@
           <input id="lf-title" type="text" class="lf-input" placeholder="e.g. CFO, IT Director">
         </div>
 
+        <!-- Country -->
+        <div class="lf-group">
+          <label class="lf-label">Country <span class="lf-req">*</span></label>
+          <select id="lf-country" class="lf-input">
+            <option value="">— Select country —</option>
+            <option>Kenya</option>
+            <option>Uganda</option>
+            <option>Tanzania</option>
+            <option>Rwanda</option>
+            <option>Angola</option>
+          </select>
+        </div>
+
         <!-- Phone -->
         <div class="lf-group">
           <label class="lf-label" id="lf-phone-label">Contact Phone <span class="lf-req" id="lf-phone-req">*</span></label>
-          <input id="lf-phone" type="tel" class="lf-input" placeholder="Phone number"
+          <p style="color:rgba(255,255,255,0.4);font-size:11px;margin:2px 0 4px;">Kenya +254 · Uganda +256 · Tanzania +255 · Rwanda +250 · Angola +244</p>
+          <input id="lf-phone" type="tel" class="lf-input" placeholder="+254 7XX XXX XXX  /  +256 7XX…  /  +255 7XX…"
             oninput="lfPhoneInput()" onblur="lfPhoneBlur()">
           <div id="lf-phone-warn" class="lf-warn" style="display:none;">
             ⚠️ <span id="lf-phone-hint-text"></span>
@@ -992,7 +1006,7 @@
 
         <!-- Website -->
         <div class="lf-group">
-          <label class="lf-label">Website <span class="lf-req">*</span></label>
+          <label class="lf-label">Website</label>
           <input id="lf-website" type="url" class="lf-input" placeholder="https://company.com">
           <div id="lf-website-warn" class="lf-warn" style="display:none;">
             ⚠️ Please enter the company website.
@@ -1192,7 +1206,7 @@ const RESOURCES_ENABLED = false;
 
 const PHONE_MANDATORY = true;
 const SURVEY_URL      = '';
-const PHONE_REGEX = /[0-9]{7,15}|\+[0-9]{7,15}/;
+const PHONE_REGEX = /^\+?(254|256|255|250|244)[\d]{7,10}$|^[\d]{7,15}$/;
 const PHONE_HINT  = 'Format: 7-15 digit number, optional + prefix';
 
 const REFRESH_INTERVAL = 60000; // 60 seconds
@@ -1923,12 +1937,13 @@ function lfSubmit() {
   const outcome  = document.getElementById('lf-outcome').value.trim();
   const nextstep = document.getElementById('lf-nextstep').value.trim();
   const ai       = document.getElementById('lf-ai').value.trim();
+  const country  = document.getElementById('lf-country').value.trim();
   const notes    = document.getElementById('lf-notes').value.trim();
   const sde      = SDES && SDES.length > 0 ? document.getElementById('lf-sde').value.trim() : '';
   const status   = document.getElementById('lf-status');
   const btn      = document.getElementById('lf-btn');
 
-  if (!partner || !rep || !account || !contact || !title || (!PHONE_MANDATORY ? false : !phone) || !website || !industry || !outcome || !nextstep || !ai) {
+  if (!partner || !rep || !account || !contact || !title || !country || (!PHONE_MANDATORY ? false : !phone) || !industry || !outcome || !nextstep || !ai) {
     status.innerHTML = '<span style="color:#ff6b6b;">Please fill in all required fields.</span>';
     return;
   }
@@ -1941,13 +1956,6 @@ function lfSubmit() {
   if (phone && !PHONE_REGEX.test(phone)) {
     document.getElementById('lf-phone-warn').style.display = 'flex';
     status.innerHTML = '<span style="color:#ff6b6b;">Please fix the phone number before submitting.</span>';
-    return;
-  }
-
-  // Validate website
-  if (!website) {
-    document.getElementById('lf-website-warn').style.display = 'flex';
-    status.innerHTML = '<span style="color:#ff6b6b;">Please enter the company website.</span>';
     return;
   }
 
@@ -1977,7 +1985,7 @@ function lfSubmit() {
   fetch(WEB_APP_URL + '/leads', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ partner, rep, account, contact, title, phone, email, website, industry, outcome, nextstep, ai, notes, sde,
+    body: JSON.stringify({ partner, rep, account, contact, title, country, phone, email, website, industry, outcome, nextstep, ai, notes, sde,
       onMaster: onMaster ? 'YES' : 'NO — not on master list' })
   })
     .then(r => r.json())
@@ -1989,6 +1997,7 @@ function lfSubmit() {
         status.innerHTML = '';
         ['lf-rep','lf-account','lf-contact','lf-title','lf-phone','lf-email','lf-website','lf-nextstep','lf-notes'].forEach(id =>
           document.getElementById(id).value = '');
+        document.getElementById('lf-country').value = '';
         document.getElementById('lf-outcome').value = '';
         document.getElementById('lf-industry').value = '';
         document.getElementById('lf-ai').value = '';
