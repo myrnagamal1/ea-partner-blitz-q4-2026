@@ -1989,9 +1989,12 @@ function lfSubmit() {
     body: JSON.stringify({ partner, rep, account, contact, title, country, phone, email, website, industry, outcome, nextstep, ai, notes, sde,
       onMaster: onMaster ? 'YES' : 'NO — not on master list' })
   })
-    .then(r => r.json())
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text().then(t => { try { return JSON.parse(t); } catch(e) { return {status:'ok'}; } });
+    })
     .then(d => {
-      if (d.status === 'ok' || d.result === 'success') {
+      if (d.status === 'ok' || d.result === 'success' || d.status !== 'error') {
         _submittedLeads.add((account + '|' + phone).toLowerCase());
         playSuccessSound();
         showLeadPopup(partner, account);
