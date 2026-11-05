@@ -2211,6 +2211,7 @@ function dashLogin() {
   }
 }
 
+function dashLogout() {
   sessionStorage.removeItem('dashUnlocked');
   clearInterval(dashInterval);
   document.getElementById('dash-gate').style.display = 'block';
@@ -2477,6 +2478,7 @@ function renderAeTab(partner) {
 }
 
 
+function downloadExcel() {
   if (!dashAllRows || dashAllRows.length === 0) {
     alert('No leads to export.');
     return;
