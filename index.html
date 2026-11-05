@@ -1198,7 +1198,7 @@
 const WEB_APP_URL = 'https://blitz-backend-funny-crocodile-sx.cfapps.eu10-004.hana.ondemand.com/event/ea-partner-blitz-q4-2026';
 const EVENT_NAME  = 'EA Partner Blitz - Q4 2026';
 const COUNTRY     = 'Kenya, Uganda, Tanzania, Rwanda, Angola';
-const DASH_URL    = 'https://blitz-backend-funny-crocodile-sx.cfapps.eu10-004.hana.ondemand.com/event/ea-partner-blitz-q4-2026/leads';
+const DASH_URL    = 'https://blitz-backend-funny-crocodile-sx.cfapps.eu10-004.hana.ondemand.com/event/ea-partner-blitz-q4-2026/dashboard';
 const DASH_PASS   = 'EABLITZ2026';
 const LEAD_TARGET = 30;
 const DAYS        = [{"label":"Day 1 - Nov 11","date":"2026-11-11"}];
@@ -2246,7 +2246,7 @@ if (sessionStorage.getItem('dashUnlocked') === '1') {
 }
 
 function loadDashboard(manual = false) {
-  fetch(DASH_URL)
+  fetch(DASH_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
     .then(r => r.json())
     .then(data => {
       const rows = data.rows || [];
