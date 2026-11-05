@@ -1809,63 +1809,35 @@ function renderDashStats(rows) {
   const _gti = document.getElementById('global-target-input');
   if (_gti) _gti.value = getGlobalTarget() || '';
 
-  document.getElementById('dash-partner-bars').innerHTML = lb.length === 0
-    ? '<p style="color:rgba(255,255,255,0.35);font-size:0.85rem;margin:0;">No leads yet.</p>'
-    : lb.map(item => {
-        const pname = item.partner.replace(/'/g, "\\'").replace(/</g, '&lt;');
-        const att         = getAtt(item.partner);
+    // Build lead count lookup
+  const leadMap = {};
+  lb.forEach(item => { leadMap[item.partner] = item.leads; });
+  const maxPartnerLeads = Math.max(...PARTNERS.map(p => leadMap[p] || 0), 1);
+
+  document.getElementById('dash-partner-bars').innerHTML = PARTNERS.length === 0
+    ? '<p style="color:rgba(255,255,255,0.35);font-size:0.82rem;margin:0;">No partners defined.</p>'
+    : PARTNERS.map(partnerName => {
+        const leads       = leadMap[partnerName] || 0;
+        const pname       = partnerName.replace(/'/g, "\'").replace(/</g, '&lt;');
+        const att         = getAtt(partnerName);
         const globalTgt   = getGlobalTarget();
         const totalTarget = att * globalTgt;
-        const pct         = totalTarget > 0 ? Math.min(item.leads / totalTarget * 100, 100) : 0;
+        const pct         = totalTarget > 0 ? Math.min(leads / totalTarget * 100, 100) : 0;
         const barColor    = pct >= 100 ? '#4ade80' : pct >= 60 ? '#f97316' : '#38bdf8';
         const icon        = pct >= 100 ? '&#x2705;' : pct >= 60 ? '&#x1F525;' : '&#x23F3;';
-        const scoreText   = totalTarget > 0
-          ? `<span style="font-size:0.85rem;font-weight:700;color:${barColor};white-space:nowrap;">${item.leads}/${totalTarget}</span><span style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-left:4px;">${Math.round(pct)}%</span>`
-          : `<span style="font-size:0.85rem;font-weight:700;color:var(--gold);">${item.leads}</span>`;
-        const track = totalTarget > 0
-          ? `<div style="flex:1;height:10px;background:rgba(255,255,255,0.08);border-radius:5px;overflow:hidden;"><div style="height:100%;width:${pct.toFixed(1)}%;background:${barColor};border-radius:5px;transition:width 0.5s;"></div></div>`
-          : `<div style="flex:1;height:10px;background:rgba(255,255,255,0.08);border-radius:5px;overflow:hidden;"><div style="height:100%;width:${Math.round((item.leads/maxLeads)*100)}%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:5px;"></div></div>`;
-        return `
-      <div style="display:grid;grid-template-columns:28px 160px 1fr auto auto;align-items:center;gap:12px;margin-bottom:14px;">
-        <span style="font-size:1rem;text-align:center;">${totalTarget > 0 ? icon : ''}</span>
-        <span style="font-size:0.88rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${item.partner}">${item.partner}</span>
-        ${track}
-        ${scoreText}
-        <div style="display:flex;align-items:center;gap:4px;">
-          <input type="number" min="0" placeholder="Att." title="Attendees for ${item.partner}"
-            value="${att || ''}"
-            onchange="setAtt('${pname}', parseInt(this.value)||0)"
-            style="width:50px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:4px 6px;color:rgba(255,255,255,0.7);font-size:0.75rem;text-align:center;outline:none;">
-        </div>
-      </div>`;
+        const barW        = totalTarget > 0 ? pct.toFixed(1) : leads > 0 ? Math.round((leads/maxPartnerLeads)*100) : 0;
+        const barBg       = totalTarget > 0 ? barColor : 'linear-gradient(90deg,var(--teal),var(--gold))';
+        const scoreHtml   = totalTarget > 0
+          ? `<span style="font-size:0.78rem;font-weight:700;color:${barColor};white-space:nowrap;min-width:52px;text-align:right;">${leads}/${totalTarget}&nbsp;<span style="font-weight:400;color:rgba(255,255,255,0.38);font-size:0.7rem;">${Math.round(pct)}%</span></span>`
+          : `<span style="font-size:0.78rem;font-weight:700;color:var(--gold);white-space:nowrap;min-width:52px;text-align:right;">${leads}</span>`;
+        return `<div style="display:grid;grid-template-columns:18px 130px 1fr 60px 46px;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+  <span style="font-size:0.82rem;text-align:center;line-height:1;">${totalTarget > 0 ? icon : ''}</span>
+  <span style="font-size:0.8rem;font-weight:700;color:${leads > 0 ? '#fff' : 'rgba(255,255,255,0.4)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${partnerName}">${partnerName}</span>
+  <div style="height:7px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;"><div style="height:100%;width:${barW}%;background:${barBg};border-radius:4px;transition:width 0.5s;"></div></div>
+  ${scoreHtml}
+  <input type="number" min="0" placeholder="Att" title="Attendees for ${partnerName}" value="${att || ''}" onchange="setAtt('${pname}',parseInt(this.value)||0)" style="width:42px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.13);border-radius:5px;padding:3px 4px;color:rgba(255,255,255,0.6);font-size:0.68rem;text-align:center;outline:none;">
+</div>`;
       }).join('');
-
-  if (lb.length > 0) {
-    document.getElementById('dash-partner-table-wrap').style.display = '';
-    document.getElementById('dash-partner-tbody').innerHTML = lb.map(item => {
-      const ai = aiCounts[item.partner] || 0;
-      const pct = Math.round((item.leads / total) * 100);
-      const att = getAtt(item.partner);
-      const totalTarget = att * getGlobalTarget();
-      const pct2 = totalTarget > 0 ? Math.round(item.leads / totalTarget * 100) : null;
-      const progColor = pct2 !== null && pct2 >= 100 ? '#4ade80' : pct2 !== null && pct2 >= 60 ? 'var(--gold)' : 'rgba(255,255,255,0.5)';
-      const progCell = totalTarget > 0
-        ? `<span style="color:${progColor};font-weight:700;">${item.leads}/${totalTarget}</span> <span style="color:rgba(255,255,255,0.4);font-size:0.75rem;">${pct2}%</span>`
-        : '<span style="color:rgba(255,255,255,0.25);">—</span>';
-      const oc = outcomeCounts[item.partner] || {};
-      const topOutcomes = Object.keys(oc).sort((a,b) => oc[b]-oc[a]).slice(0,3)
-        .map(k => `<span style="background:rgba(123,79,191,0.18);color:var(--teal2);border-radius:4px;padding:2px 7px;margin-right:4px;font-size:0.75rem;">${k.replace(/</g,'&lt;')} x${oc[k]}</span>`).join('');
-      return `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-        <td style="padding:10px 12px;color:#fff;font-weight:600;">${item.partner.replace(/</g,'&lt;')}</td>
-        <td style="padding:10px 12px;text-align:center;color:var(--gold);font-weight:700;">${item.leads}</td>
-        <td style="padding:10px 12px;text-align:center;color:#a78bfa;">${ai > 0 ? ai : '<span style="color:rgba(255,255,255,0.3);">0</span>'}</td>
-        <td style="padding:10px 12px;text-align:center;color:rgba(255,255,255,0.6);">${pct}%</td>
-        <td style="padding:10px 12px;">${topOutcomes || '<span style="color:rgba(255,255,255,0.3);font-size:0.8rem;">none</span>'}</td>
-      </tr>`;
-    }).join('');
-  } else {
-    document.getElementById('dash-partner-table-wrap').style.display = 'none';
-  }
 }
 
 // ── LEAD FORM ──────────────────────────────────────────
